@@ -33,8 +33,8 @@ metadata {
 		attribute "currentSensorCal", "number"
 	}
 		preferences {
-        	input "swingDegrees", "enum", title: "Temperature Swing", description: "Number of degrees above/below setpoint before unit turns on", multiple: false, defaultValue: "2", options: ["1","2","3","4"], required: false, displayDuringSetup: true
-        	input "tempDiff", "enum", title: "Temperature Differential", description: "Number of degrees between turning ON/OFF Stage 1 and Stage 2. Only applies to multi-stage heating and cooling.", multiple: false, defaultValue: "2", options: ["1","2","3","4"], required: false, displayDuringSetup: true
+        		input "swingDegrees", "enum", title: "Temperature Swing", description: "Number of degrees above/below setpoint before unit turns on", multiple: false, defaultValue: "2", options: ["1","2","3","4"], required: false, displayDuringSetup: true
+        		input "tempDiff", "enum", title: "Temperature Differential", description: "Number of degrees between turning ON/OFF Stage 1 and Stage 2. Only applies to multi-stage heating and cooling.", multiple: false, defaultValue: "2", options: ["1","2","3","4"], required: false, displayDuringSetup: true
 			input "maxHeatSP", "number", title: "Maximum Heat Setpoint", description: "Maximum temperature the heating setpoint can be set to. (Valid Values: 41F to 99F)", multiple: false, defaultValue: "99", range: "41..99", required: false, displayDuringSetup: true
 			input "minCoolSP", "number", title: "Minimum Cool Setpoint", description: "Minimum temperature the cooling setpoint can be set to. (Valid Values: 41F to 99F)", multiple: false, defaultValue: "41", range: "41..99", required: false, displayDuringSetup: true
 			input "filterMonths", "enum", title: "Filter months", description: "Number of months between filter replacement notifications", multiple: false, defaultValue: "6", options: ["1","2","3","4","5","6"], required: false, displayDuringSetup: true
@@ -50,7 +50,7 @@ def parse(String description) {
 	if (logEnable) log.debug "Parse...START"
 	if (logEnable) log.debug "Parsing '${description}'"
 	def map = createEvent(zwaveEvent(zwave.parse(description, [0x20:1, 0x31:5, 0x40:3, 0x42:2, 0x43:2, 0x44:4, 0x45:2, 0x59:2, 0x5A:1, 0x5E:2, 0x70:1, 0x72:2, 0x73:1, 0x7A:3, 0x85:2, 0x86:2, 0x98:1])))
-    if (logEnable) log.debug "In parse, map is $map"
+    	if (logEnable) log.debug "In parse, map is $map"
 	return null
 }
 
@@ -67,7 +67,10 @@ def setHeatingSetpoint(double degrees) {
     if (logEnable) log.debug "setpoint requested is $degrees"
     if (logEnable) log.debug "setHeatingSetpoint...END"
     //zwave.thermostatSetpointV2.thermostatSetpointSet(setpointType: 1, scale: getTemperatureScale()=="F" ? 1:0 , precision: 0, scaledValue: value)
-	return zwave.thermostatSetpointV1.thermostatSetpointSet(setpointType: 1, scale: 1, precision: p, scaledValue: degrees).format()
+    return delayBetween([
+        zwave.thermostatSetpointV1.thermostatSetpointSet(setpointType: 1, scale: 1, precision: p, scaledValue: degrees).format(),
+        zwave.thermostatSetpointV1.thermostatSetpointGet(setpointType: 1).format()
+    ],500);
 }
 
 def setCoolingSetpoint(double degrees) {
@@ -79,7 +82,10 @@ def setCoolingSetpoint(double degrees) {
 	if (logEnable) log.debug "precision is $p"
     if (logEnable) log.debug "setpoint requested is $degrees"
     if (logEnable) log.debug "setCoolingSetpoint...END"
-	return zwave.thermostatSetpointV1.thermostatSetpointSet(setpointType: 2, scale: 1, precision: p, scaledValue: degrees).format()
+	return delayBetween([
+        zwave.thermostatSetpointV1.thermostatSetpointSet(setpointType: 2, scale: 1, precision: p, scaledValue: degrees).format(),
+		zwave.thermostatSetpointV1.thermostatSetpointGet(setpointType: 2).format()
+    ], 500);
 }
 
 def off() {
@@ -105,7 +111,7 @@ def heat() {
 
 def emergencyHeat() {
 	if (logEnable) log.debug "Switching to emergency heat mode..."
-    return delayBetween([
+    	return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 4).format(),
 		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
 	], 1000)
@@ -113,7 +119,7 @@ def emergencyHeat() {
 
 def cool() {
 	if (logEnable) log.debug "Switching to cool mode..."
-    return delayBetween([
+    	return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 2).format(),
 		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
 	], 1000)
@@ -173,7 +179,7 @@ def fanCirculate() {
 	delayBetween([
 		zwave.thermostatFanModeV3.thermostatFanModeSet(fanMode: 6).format(),
 		zwave.thermostatFanModeV3.thermostatFanModeGet().format(),
-        zwave.thermostatFanStateV1.thermostatFanStateGet().format()
+                zwave.thermostatFanStateV1.thermostatFanStateGet().format()
 	], 3000)
 	*/
 }
@@ -386,7 +392,7 @@ def resetFilter() {
 	return delayBetween([
 		zwave.configurationV1.configurationSet(parameterNumber: 3, size: 2, configurationValue: [0,paramValue]).format(),
 		zwave.configurationV1.configurationGet(parameterNumber: 3).format()
-		], 1000)
+	], 1000)
 }
 
 //
