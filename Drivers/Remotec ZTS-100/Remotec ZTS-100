@@ -376,12 +376,12 @@ def logsOff() {
 def resetFilter() {
     if (logEnable) log.debug "Executing 'resetFilter'"
     def months
-	def paramValue
+    def paramValue
     
     months = settings.filterMonths.toInteger()
 
     if (settings.filterMonths) {
-	    paramFilter = monthsToHours(months)
+	paramValue = monthsToHours(months)
     } else {
         paramValue = 500
     }
