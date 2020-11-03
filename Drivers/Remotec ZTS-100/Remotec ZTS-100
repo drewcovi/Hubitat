@@ -70,7 +70,7 @@ def setHeatingSetpoint(double degrees) {
     return delayBetween([
         zwave.thermostatSetpointV1.thermostatSetpointSet(setpointType: 1, scale: 1, precision: p, scaledValue: degrees).format(),
         zwave.thermostatSetpointV1.thermostatSetpointGet(setpointType: 1).format()
-    ],500);
+    ],1000);
 }
 
 def setCoolingSetpoint(double degrees) {
@@ -85,7 +85,7 @@ def setCoolingSetpoint(double degrees) {
 	return delayBetween([
         zwave.thermostatSetpointV1.thermostatSetpointSet(setpointType: 2, scale: 1, precision: p, scaledValue: degrees).format(),
 		zwave.thermostatSetpointV1.thermostatSetpointGet(setpointType: 2).format()
-    ], 500);
+    ], 1000);
 }
 
 def off() {
@@ -93,7 +93,7 @@ def off() {
     return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 0).format(),
         zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
-	], 1000)
+    ], 1000)
 }
 
 def on() {
