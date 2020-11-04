@@ -486,7 +486,7 @@ private zwaveEvent(hubitat.zwave.commands.thermostatsetpointv2.ThermostatSetpoin
 	def csp = getDataValue("coolingSetpoint")
 	def hsp = getDataValue("heatingSetpoint")
     
-    if (logEnable) log.debug "tos: "+tos+", tm: "+tm+", lrm:"+lrm+"," csp:"+csp+", hsp:"+hsp
+    if (logEnable) log.debug "tos: "+tos+", tm: "+tm+", lrm:"+lrm+", csp:"+csp+", hsp:"+hsp
 
 	if (lrm == null) {
 		if (tm == "cool") {
