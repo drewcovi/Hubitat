@@ -476,7 +476,7 @@ private zwaveEvent(hubitat.zwave.commands.thermostatsetpointv2.ThermostatSetpoin
 	state.precision = cmd.precision
     if (logEnable) log.debug "In ThermostatSetpointReport map is $map"
     
-    updateDataValue(map.name, map.value.toString())
+    updateDataValue(map.name.toString(), map.value.toString())
 	sendEvent([name: map.name, value: map.value, displayed:true, unit: map.unit, isStateChange:true])
 
 	// Update thermostatSetpoint based on mode and operatingstate
