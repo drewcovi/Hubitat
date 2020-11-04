@@ -92,7 +92,8 @@ def off() {
 	if (logEnable) log.debug "Switching to off mode..."
     return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 0).format(),
-        zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
+        zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format(),
+	    zwave.thermostatModeV1.thermostatModeGet().format()
     ], 1000)
 }
 
@@ -105,7 +106,8 @@ def heat() {
 	if (logEnable) log.debug "Switching to heat mode..."
 	return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 1).format(),
-		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
+		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format(),
+		zwave.thermostatModeV1.thermostatModeGet().format()
 	], 1000)   
 }
 
@@ -113,7 +115,8 @@ def emergencyHeat() {
 	if (logEnable) log.debug "Switching to emergency heat mode..."
     	return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 4).format(),
-		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
+		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format(),
+		zwave.thermostatModeV1.thermostatModeGet().format()
 	], 1000)
 }
 
@@ -121,7 +124,8 @@ def cool() {
 	if (logEnable) log.debug "Switching to cool mode..."
     	return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 2).format(),
-		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
+		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format(),
+		zwave.thermostatModeV1.thermostatModeGet().format()
 	], 1000)
 }
 
@@ -152,6 +156,7 @@ def setThermostatMode(value) {
 			break
 	}
 	cmds << zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
+	cmds << zwave.thermostatModeV1.thermostatModeGet().format()
 	return delayBetween(cmds, 1000)
 }
 
@@ -209,7 +214,8 @@ def auto() {
 	if (logEnable) log.debug "Switching to auto mode..."
     return delayBetween([
 		zwave.thermostatModeV2.thermostatModeSet(mode: 3).format(),
-		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format()
+		zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format(),
+        zwave.thermostatModeV1.thermostatModeGet().format()
 	], 1000)
 }
 
@@ -421,6 +427,7 @@ private zwaveEvent(hubitat.zwave.commands.configurationv1.ConfigurationReport cm
 
 private zwaveEvent(hubitat.zwave.commands.basicv1.BasicSet cmd) {
     // setup basic reports for missed operating state changes
+    debug
     if (cmd.value.toInteger()==0xFF) {
         if (device.currentValue("thermostatOperatingState")!="heating" || device.currentValue!="cooling") sendToDevice(zwave.thermostatOperatingStateV1.thermostatOperatingStateGet().format())
     } else {
